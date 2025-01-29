@@ -249,7 +249,7 @@ class Ventana(tb.Window):
         pantalla_alto=self.frame_right.winfo_screenheight()
         
         coordenadas_x=int((pantalla_ancho/2)-(ventana_ancho/2))
-        coordenadas_y=int((pantalla_ancho/2)-(ventana_ancho/2))
+        coordenadas_y=int((pantalla_alto/2)-(ventana_alto/2))
         
         self.frame_nuevo_usuario.geometry("{}x{}+{}+{}".format(ventana_ancho, ventana_alto, coordenadas_x, coordenadas_y))
 
