@@ -136,7 +136,7 @@ class Ventana(tb.Window):
         
     def mostrar_usuarios(self):
         try:
-            miConexion=sqlite3.connect("ventas.db")
+            miConexion=sqlite3.connect("Ventas.db")
             miCursor=miConexion.cursor()
             registros=self.tree_lista_usuarios.get_children()
             for elementos in registros:
@@ -161,8 +161,97 @@ class Ventana(tb.Window):
         self.frame_nuevo_usuario.grab_set()
         
         lblframe_nuevo_usuario=LabelFrame(self.frame_nuevo_usuario)
+        lblframe_nuevo_usuario.grid(row=0, column=0, sticky=NSEW, padx=10, pady=10)
         
+        lbl_codigo_nuevo_usuario=Label(lblframe_nuevo_usuario, text="Codigo")
+        lbl_codigo_nuevo_usuario.grid(row=0, column=0, padx=10, pady=10)
+        self.txt_codigo_nuevo_usuario=Entry(lblframe_nuevo_usuario, width=40)
+        self.txt_codigo_nuevo_usuario.grid(row=0, column=1, padx=10, pady=10)
         
+        lbl_nombre_nuevo_usuario=Label(lblframe_nuevo_usuario, text="Nombre")
+        lbl_nombre_nuevo_usuario.grid(row=1, column=0, padx=10, pady=10)
+        self.txt_nombre_nuevo_usuario=Entry(lblframe_nuevo_usuario, width=40)
+        self.txt_nombre_nuevo_usuario.grid(row=1, column=1, padx=10, pady=10)
+        
+        lbl_clave_nuevo_usuario=Label(lblframe_nuevo_usuario, text="Clave")
+        lbl_clave_nuevo_usuario.grid(row=2, column=0, padx=10, pady=10)
+        self.txt_clave_nuevo_usuario=Entry(lblframe_nuevo_usuario, width=40)
+        self.txt_clave_nuevo_usuario.grid(row=2, column=1, padx=10, pady=10)
+        
+        lbl_rol_nuevo_usuario=Label(lblframe_nuevo_usuario, text="Rol")
+        lbl_rol_nuevo_usuario.grid(row=3, column=0, padx=10, pady=10, sticky=E)
+        self.txt_rol_nuevo_usuario=ttk.Combobox(lblframe_nuevo_usuario, values=("Administrador", "Bodega","Vendedor"),width=38, state="readonly")
+        self.txt_rol_nuevo_usuario.grid(row=3, column=1, padx=10, pady=10)
+        self.txt_rol_nuevo_usuario.current(0)
+        
+        btn_guardar_nuevo_usuario=tb.Button(lblframe_nuevo_usuario, text="Guardar", width=38, command=self.guardar_usuario)
+        btn_guardar_nuevo_usuario.grid(row=4, column=1, padx=10, pady=10)
+        
+        self.ultimo_usuario()
+    def guardar_usuario(self):
+        if self.txt_codigo_nuevo_usuario.get()=="" or self.txt_nombre_nuevo_usuario.get()=="" or self.txt_clave_nuevo_usuario.get()=="" or self.txt_rol_nuevo_usuario.get()=="":
+            messagebox.showwarning("Guardando Usuarios", "Todos los campos son obligatorios")
+            return
+        try:
+            miConexion=sqlite3.connect("Ventas.db")
+            miCursor=miConexion.cursor()
+            
+            datos_guardar_usuario=self.txt_codigo_nuevo_usuario.get(),  self.txt_nombre_nuevo_usuario.get(),  self.txt_clave_nuevo_usuario.get(),  self.txt_rol_nuevo_usuario.get()
+            miCursor.execute("INSERT INTO Usuarios VALUES(?,?,?,?)",(datos_guardar_usuario))
+            messagebox.showinfo("Guardando Usuarios", "El usuario ha sido guardado con exito")
+            miConexion.commit()
+            self.frame_nuevo_usuario.destroy()
+            self.ventana_lista_usuarios()
+            miConexion.close()
+    
+        except:
+            messagebox.showerror("Guardando Usuarios", "Hubo un error al guardar el usuario")
+            
+    def ultimo_usuario(self):
+        try:
+            miConexion=sqlite3.connect("Ventas.db")
+            miCursor=miConexion.cursor()
+    
+            miCursor.execute("SELECT MAX(Codigo) FROM Usuarios")
+            datos=miCursor.fetchone()
+            for codusu in datos:
+                if codusu==None:
+                    self.ultusu=(int(1))
+                    self.txt_codigo_nuevo_usuario.configure(state=NORMAL)
+                    self.txt_codigo_nuevo_usuario.insert(0, self.ultusu)
+                    self.txt_codigo_nuevo_usuario.configure(state="readonly")
+                    break
+                    
+                if codusu=="":
+                    self.ultusu=(int(1))
+                    self.txt_codigo_nuevo_usuario.configure(state=NORMAL)
+                    self.txt_codigo_nuevo_usuario.insert(0, self.ultusu)
+                    self.txt_codigo_nuevo_usuario.configure(state="readonly")
+                    break
+                    
+                else:
+                    self.ultusu=(int(codusu)+1)
+                    self.txt_codigo_nuevo_usuario.configure(state=NORMAL)
+                    self.txt_codigo_nuevo_usuario.insert(0, self.ultusu)
+                    self.txt_codigo_nuevo_usuario.configure(state="readonly")
+                    
+            miConexion.commit()
+            miConexion.close()
+            
+            
+        except:
+            messagebox.showerror("Error de Base de Datos", "Hubo un error al mostrar los usuarios")
+    def centrar_ventana_neuvo_usuario(self, ancho, alto):
+        ventana_ancho=ancho
+        ventana_alto=alto
+        
+        pantalla_ancho=self.frame_right.winfo_screenwidth()
+        pantalla_alto=self.frame_right.winfo_screenheight()
+        
+        coordenadas_x=int((pantalla_ancho/2)-(ventana_ancho/2))
+        coordenadas_y=int((pantalla_ancho/2)-(ventana_ancho/2))
+        
+        self.frame_nuevo_usuario.geometry("{}x{}+{}+{}".format(ventana_ancho, ventana_alto, coordenadas_x, coordenadas_y))
 
 def main():
 
